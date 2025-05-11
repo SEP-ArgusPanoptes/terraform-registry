@@ -1,0 +1,31 @@
+name: CI & SonarCloud
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23.6'
+
+      - name: Run tests + coverage
+        run: go test ./... -coverprofile=coverage.out
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v1
+        with:
+          organization: philips-labs              # your SonarCloud org key
+          projectKey: philips-labs_terraform-registry
+          projectName: terraform-registry
+          token: ${{ secrets.SONAR_TOKEN }}      # store your token in GitHub Secrets
+          extra-args: |
+            -Dsonar.go.coverage.reportPaths=coverage.out
+            -Dsonar.sources=.
