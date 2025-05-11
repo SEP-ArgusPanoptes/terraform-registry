@@ -31,7 +31,7 @@ jobs:
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v1 # ??????
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Needed for SonarCloud
+          SONAR_TOKEN: 232a7746968d122344c96002d97d08dddb1b4c3e   # Needed for SonarCloud
         with:
           organization: SEP-arguspanoptes             # the SonarCloud org key
           projectKey: SEP-ArgusPanoptes_terraform-registry
