@@ -11,24 +11,32 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # no need to install Java manually—the action bundles it
+      # 2) Set up Java (required by the SonarScanner CLI)
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version: '1.20'
 
       - name: Run tests + coverage
-        run: go test ./... -coverprofile=coverage.out
+        run: |
+          go test ./... -coverprofile=coverage.out
+          go tool cover -func=coverage.out
 
       - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@v4.0.0     # or @master
+        uses: sonarsource/sonarcloud-github-action@v1 # ??????
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}             # your Sonar token here
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Needed for SonarCloud
         with:
-          projectBaseDir: .                                   # analyze from repo root
-          args: >                                            # all -D flags in one block
-            -Dsonar.organization=philips-labs
-            -Dsonar.projectKey=philips-labs_terraform-registry
-            -Dsonar.projectName=terraform-registry
+          organization: SEP-arguspanoptes             # the SonarCloud org key
+          projectKey: SEP-ArgusPanoptes_terraform-registry
+          projectName: terraform-registry
+          extra-args: |
             -Dsonar.sources=.
             -Dsonar.go.coverage.reportPaths=coverage.out
+
